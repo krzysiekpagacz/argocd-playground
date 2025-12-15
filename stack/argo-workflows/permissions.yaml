@@ -1,0 +1,93 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: workflow-executor
+  namespace: workflows
+automountServiceAccountToken: true # that's not the best security practice but required by http kind of template. Added for testing, finall solution should be done differently
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: workflows
+  name: workflow-executor
+rules:
+  - apiGroups: ["argoproj.io"]
+    resources: ["workflowtasksets", "workflowtasksets/status", "workflowtaskresults"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: workflow-executor
+  namespace: workflows
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: workflow-executor
+subjects:
+- kind: ServiceAccount
+  name: workflow-executor
+  namespace: workflows
+
+---
+
+apiVersion: v1
+kind: Secret
+metadata:
+  annotations:
+    kubernetes.io/service-account.name: workflow-executor
+  name: workflow-executor.service-account-token
+  namespace: workflows
+type: kubernetes.io/service-account-token
+
+---
+# confluence api token
+apiVersion: v1
+kind: Secret
+metadata:
+  name: confluence-creds
+  namespace: workflows
+type: Opaque
+stringData:
+  CONF_USER: "krzysztof-tomasz.pagacz@t-systems.com"
+  CONF_TOKEN: "OTUwMzk2NjI2MzM5Omfm9Me0o9chjCflIr6w2/vJEOrs"
+
+---
+
+# alternative only PAT
+apiVersion: v1
+kind: Secret
+metadata:
+  name: confluence-pat
+  namespace: workflows
+type: Opaque
+stringData:
+  CONF_PAT: "OTUwMzk2NjI2MzM5Omfm9Me0o9chjCflIr6w2/vJEOrs"
+
+---
+
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: argo-controller-workflowtasksets
+rules:
+  - apiGroups: ["argoproj.io"]
+    resources: ["workflowtasksets", "workflowtasksets/status", "workflowtaskresults"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: argo-controller-workflowtasksets
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: argo-controller-workflowtasksets
+subjects:
+  - kind: ServiceAccount
+    name: argo             
+    namespace: argo         

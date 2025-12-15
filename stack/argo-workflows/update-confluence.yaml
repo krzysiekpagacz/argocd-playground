@@ -1,0 +1,298 @@
+
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: update-confluence-body
+  namespace: workflows
+spec:
+  entrypoint: main
+  serviceAccountName: workflow-executor
+  arguments:
+    parameters:
+      - name: api_root
+        value: "https://confluence.telekom-mms.com"
+      - name: page_id
+        value: "1175330814"
+      - name: expected_title
+        value: "Argo Workflows"
+      - name: dummy_text
+        value: "&lt;p&gt;&lt;strong&gt;Dummy update:&lt;/strong&gt; Added by Argo at {{workflow.creationTimestamp}}.&lt;/p&gt;"
+        
+  templates:
+    - name: main
+      steps:
+      - - name: get-page
+          template: http-get
+          arguments:
+            parameters:
+              - name: url
+                value: "{{workflow.parameters.api_root}}/rest/api/content/{{workflow.parameters.page_id}}?expand=version,body.storage,title"
+
+      - - name: extract-fields
+          template: extract-page-fields
+          arguments:
+            parameters:
+              - name: payload
+                value: "{{steps.get-page.outputs.result}}"
+
+      - - name: build-updated-body
+          template: build-updated-body
+          arguments:
+            parameters:
+              - name: body_html
+                value: "{{steps.extract-fields.outputs.parameters.body_html}}"
+              - name: execution_ts
+                value: "{{workflow.creationTimestamp}}"
+
+      - - name: build-update-json
+          template: build-update-json
+          arguments:
+            parameters:
+              - name: page_id
+                value: "{{workflow.parameters.page_id}}"
+              - name: title
+                value: "{{steps.extract-fields.outputs.parameters.title}}"
+              - name: version
+                value: "{{steps.extract-fields.outputs.parameters.version}}"
+              - name: updated_body_html
+                value: "{{steps.build-updated-body.outputs.parameters.updated_body_html}}"
+
+      - - name: update-confluence
+          template: http-put
+          arguments:
+            parameters:
+              - name: url
+                value: "{{workflow.parameters.api_root}}/rest/api/content/{{workflow.parameters.page_id}}"
+              - name: body
+                value: "{{steps.build-update-json.outputs.parameters.update_json}}"
+
+      # - - name: print-title
+      #     template: print-title
+      #     arguments:
+      #       parameters:
+      #       - name: title
+      #         value: "{{steps.extract-fields.outputs.parameters.title}}"
+
+    - name: http-get
+      inputs:
+        parameters:
+        - name: url
+      http:
+        method: "GET"
+        url: "{{inputs.parameters.url}}"
+        timeoutSeconds: 20
+        headers:
+        - name: "Authorization"
+          value: "Bearer OTUwMzk2NjI2MzM5Omfm9Me0o9chjCflIr6w2/vJEOrs"  # <-- test token
+        - name: "Accept"
+          value: "application/json"
+        successCondition: "response.statusCode == 200"
+
+    - name: extract-page-fields
+      inputs:
+        parameters:
+        - name: payload
+      script:
+        image: alpine:3.19
+        command: ["/bin/sh", "-c"]
+        env:
+        - name: PAYLOAD
+          value: "{{inputs.parameters.payload}}"
+        source: |
+          set -euo pipefail
+          apk add --no-cache jq >/dev/null
+
+          # Save JSON safely
+          printf '%s' "${PAYLOAD}" > /tmp/response.json
+
+          # Validate JSON
+          jq -e . /tmp/response.json >/dev/null
+
+          # Extract fields
+          jq -r '.title // empty' /tmp/response.json > /tmp/title
+          jq -r '.version.number // empty' /tmp/response.json > /tmp/version
+          jq -r '.body.storage.value // empty' /tmp/response.json > /tmp/body.html
+
+          # Basic validation
+          if [ ! -s /tmp/title ] || [ ! -s /tmp/version ] || [ ! -s /tmp/body.html ]; then
+            echo "Missing one of: title, version.number, body.storage.value" >&2
+            exit 1
+          fi
+
+      outputs:
+        parameters:
+        - name: title
+          valueFrom:
+            path: /tmp/title
+        - name: version
+          valueFrom:
+            path: /tmp/version
+        - name: body_html
+          valueFrom:
+            path: /tmp/body.html
+       
+    # - name: extract-title
+    #   inputs:
+    #     parameters:
+    #     - name: payload
+    #   script:
+    #     image: alpine:3.19
+    #     command: ["/bin/sh", "-c"]
+    #     env:
+    #     - name: PAYLOAD
+    #       value: "{{inputs.parameters.payload}}"
+    #     source: |
+          
+    #       set -euo pipefail
+    #       apk add --no-cache jq >/dev/null
+    #       printf '%s' "${PAYLOAD}" > /tmp/response.json
+
+    #       if ! jq -e . /tmp/response.json >/dev/null; then
+    #         echo "Response is not valid JSON." >&2
+    #         exit 1
+    #       fi
+
+    #       jq -r '.title // empty' /tmp/response.json > /tmp/title #if you want to extract body use body.storage.value
+    #       if [ ! -s /tmp/title ]; then
+    #         echo "Title not found in response JSON." >&2
+    #         exit 1
+    #       fi
+
+    #   outputs:
+    #     parameters:
+    #     - name: title
+    #       valueFrom:
+    #         path: /tmp/title
+
+    
+    # --- Append timestamp line to the body.html ---
+    - name: build-updated-body
+      inputs:
+        parameters:
+        - name: body_html
+        - name: execution_ts   # from {{workflow.creationTimestamp}}
+      script:
+        image: alpine:3.19
+        command: ["/bin/sh", "-c"]
+        env:
+        - name: BODY_HTML
+          value: "{{inputs.parameters.body_html}}"
+        - name: EXEC_TS
+          value: "{{inputs.parameters.execution_ts}}"
+        source: |
+          set -euo pipefail
+
+          # Current timestamp in ISO format with timezone
+          NOW_TS="$(date -Iseconds)"
+
+          # Persist original body
+          printf '%s' "${BODY_HTML}" > /tmp/body.html
+
+          # Build the appended line (HTML storage format)
+          APPEND_LINE="<p><strong>Update:</strong> Execution: ${EXEC_TS}, Now: ${NOW_TS}</p>"
+
+          # Append with a newline separation (safe even if body doesn't end with newline)
+          printf '\n%s\n' "${APPEND_LINE}" >> /tmp/body.html
+
+          # Output
+          cp /tmp/body.html /tmp/updated_body.html
+      outputs:
+        parameters:
+        - name: updated_body_html
+          valueFrom:
+            path: /tmp/updated_body.html
+
+
+    # --- Build JSON payload for Confluence PUT update ---
+    - name: build-update-json
+      inputs:
+        parameters:
+        - name: page_id
+        - name: title
+        - name: version
+        - name: updated_body_html
+      script:
+        image: alpine:3.19
+        command: ["/bin/sh", "-c"]
+        env:
+        - name: PAGE_ID
+          value: "{{inputs.parameters.page_id}}"
+        - name: TITLE
+          value: "{{inputs.parameters.title}}"
+        - name: VERSION
+          value: "{{inputs.parameters.version}}"
+        - name: BODY_UPDATED
+          value: "{{inputs.parameters.updated_body_html}}"
+        source: |
+          set -euo pipefail
+          apk add --no-cache jq >/dev/null
+
+          # Calculate next version (ensure VERSION is numeric)
+          if ! echo "${VERSION}" | grep -Eq '^[0-9]+$'; then
+            echo "Invalid version: ${VERSION}" >&2
+            exit 1
+          fi
+          NEXT_VERSION=$((VERSION + 1))
+
+          # Use jq to build JSON (avoids escaping issues)
+          jq -n --arg id "${PAGE_ID}" \
+            --arg title "${TITLE}" \
+            --arg body "${BODY_UPDATED}" \
+            --argjson version "${NEXT_VERSION}" '
+          {
+            id: $id,
+            type: "page",
+            title: $title,
+            version: { number: $version },
+            body: {
+              storage: {
+                value: $body,
+                representation: "storage"
+              }
+            }
+          }' > /tmp/update.json
+
+      outputs:
+        parameters:
+        - name: update_json
+          valueFrom:
+            path: /tmp/update.json
+
+    # --- HTTP PUT (Agent) ---
+    - name: http-put
+      inputs:
+        parameters:
+        - name: url
+        - name: body
+      http:
+        method: "PUT"
+        url: "{{inputs.parameters.url}}"
+        timeoutSeconds: 30
+        headers:
+        - name: "Authorization"
+          value: "Bearer OTUwMzk2NjI2MzM5Omfm9Me0o9chjCflIr6w2/vJEOrs"  # <-- move to Secret for production
+        - name: "Accept"
+          value: "application/json"
+        - name: "Content-Type"
+          value: "application/json"
+        body: "{{inputs.parameters.body}}"
+        successCondition: "response.statusCode == 200"
+
+    # --- Print only the title ---
+    - name: print-title
+      inputs:
+        parameters:
+        - name: title
+      script:
+        image: alpine:3.19
+        command: ["/bin/sh", "-c"]
+        env:
+        - name: TITLE
+          value: "{{inputs.parameters.title}}"
+        source: |
+          set -euo pipefail
+          if [ -z "${TITLE:-}" ] || [ "${TITLE}" = "null" ]; then
+            echo "Title not found in response JSON."
+            exit 1
+                   fi
+          echo "=== Confluence page title: ${TITLE} ==="

@@ -1,0 +1,43 @@
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: http-template
+  namespace: workflows
+spec:
+  entrypoint: main
+  serviceAccountName: workflow-executor
+  arguments:
+    parameters:
+    - name: url
+      value: "https://www.google.com"
+  templates:
+    - name: main
+      steps:
+        - - name: get-google-homepage
+            template: http
+            arguments:
+              parameters:
+              - name: url
+                value: "{{workflow.parameters.url}}"
+    - name: http
+      inputs:
+        parameters:
+          - name: url
+      http:
+        timeoutSeconds: 20 # Default 30
+        url: "{{inputs.parameters.url}}"
+        method: "GET" # Default GET
+        headers:
+          - name: "x-header-name"
+            value: "test-value"
+        # Template will succeed if evaluated to true, otherwise will fail
+        # Available variables:
+        #  request.body: string, the request body
+        #  request.headers: map[string][]string, the request headers
+        #  request.url: string, the request url
+        #  request.method: string, the request method
+        #  response.statusCode: int, the response status code
+        #  response.body: string, the response body
+        #  response.headers: map[string][]string, the response headers
+        successCondition: "response.body contains \"google\"" # available since v3.3
+        body: "test body" # Change request body

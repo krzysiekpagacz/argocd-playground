@@ -1,0 +1,56 @@
+
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: confluence-page-check
+  namespace: workflows
+spec:
+  entrypoint: main
+  serviceAccountName: workflow-executor
+  arguments:
+    parameters:
+      - name: api_root
+        value: "https://confluence.telekom-mms.com"
+      - name: page_id
+        value: "1175330814"
+      - name: expected_title
+        value: "Argo Workflows"
+
+  templates:
+    - name: main
+      steps:
+        - - name: check-page
+            template: http
+            arguments:
+              parameters:
+                - name: url
+                  value: "{{workflow.parameters.api_root}}/rest/api/content/{{workflow.parameters.page_id}}?expand=title,version"
+
+    - name: http
+      inputs:
+        parameters:
+          - name: url
+      http:
+        method: "GET"
+        url: "{{inputs.parameters.url}}"
+        timeoutSeconds: 20
+        headers:
+          - name: "Authorization"
+            # FIX: use expression syntax to read env var at runtime
+            value: "Bearer OTUwMzk2NjI2MzM5Omfm9Me0o9chjCflIr6w2/vJEOrs" #"{{= printf \"Bearer %s\" (env \"CONF_PAT\") }}"
+          - name: "Accept"
+            value: "application/json"
+        # Strict check: HTTP 200 and title matches
+        successCondition: >
+          response.statusCode == 200 &&
+          response.body contains "\"title\":\"{{workflow.parameters.expected_title}}\""
+      # Inject PAT into the agent container
+      # podSpecPatch: |
+      #   containers:
+      #   - name: main
+      #     env:
+      #     - name: CONF_PAT
+      #       valueFrom:
+      #         secretKeyRef:
+      #           name: confluence-pat
+      #           key: CONF_PAT
