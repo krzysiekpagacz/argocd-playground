@@ -1,0 +1,6 @@
+dependencies:
+- name: mariadb-operator-crds
+  repository: https://helm.mariadb.com/mariadb-operator
+  version: 25.10.2
+digest: sha256:58a27cd32ea944a302ef4e1914e3532751d16d14ab3a9f010de22acf80901109
+generated: "2025-12-16T17:14:24.867501615+01:00"
