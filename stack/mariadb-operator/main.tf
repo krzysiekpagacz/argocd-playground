@@ -16,6 +16,7 @@ resource "helm_release" "mariadb_operator" {
   values = [
     yamlencode({
       targetRevision = each.value.target_revision
+      namespace = each.value.namespace
     })
   ]
 }
