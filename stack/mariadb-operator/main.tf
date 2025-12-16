@@ -5,7 +5,7 @@ locals {
 resource "helm_release" "mariadb_operator" {
   for_each          = local.mariadb_config
 
-  chart             = "${path.module}/../../apps/mariadb-operator"
+  chart             = "${path.module}/../../apps/parent-app"
   description       = "Deploys MariaDB helm chart within the cluster as an ArgoCD Application"
 
   name              = each.key
@@ -15,6 +15,7 @@ resource "helm_release" "mariadb_operator" {
 
   values = [
     yamlencode({
+      projectName = each.value.project_name
       targetRevision = each.value.target_revision
       namespace = each.value.namespace
     })

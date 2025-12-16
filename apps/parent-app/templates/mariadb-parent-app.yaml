@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "mariadb-parent-app"
+  namespace: argocd
+spec:
+  project: {{ .Values.projectName }}
+  source:
+    repoURL: https://github.com/krzysiekpagacz/argocd-playground.git
+    targetRevision: {{ .Values.targetRevision }}
+    path: apps/child-apps
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: {{ .Values.namespace }}
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

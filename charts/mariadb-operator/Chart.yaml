@@ -1,3 +1,4 @@
+# cli command to inspect the chart: helm show chart mariadb-operator --repo https://helm.mariadb.com/mariadb-operator
 apiVersion: v2
 name: mariadb-operator
 type: application

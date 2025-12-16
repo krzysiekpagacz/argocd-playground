@@ -1,0 +1,25 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: database
+  namespace: argocd
+spec:
+  description: Project allowing deployment of MariaDB operator and its cluster-scoped resources (CRDs, RBAC, webhooks)
+
+  # Allow pulling manifests from any repository.
+  sourceRepos:
+    - "*"
+
+  # Allow deploying to any cluster/namespace. (Tighten for prod.)
+  destinations:
+    - server: "*"
+      namespace: "*"
+
+  # Permit all resources needed by operators (including CRDs)
+  clusterResourceWhitelist:
+    - group: "*"
+      kind: "*"
+
+  # Optional: warn if resources become orphaned
+  orphanedResources:
+    warn: true

@@ -1,0 +1,5 @@
+apiVersion: v2
+name: mariadb-crds-app
+type: application
+description: Helm Chart that deploys ArgoCD Application for MariaDB CRDs
+version: 0.1.0

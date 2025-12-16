@@ -1,0 +1,57 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Release.Name }}-app"
+  namespace: argocd
+spec:
+  project: {{ .Values.projectName }}
+  source:
+    repoURL: https://github.com/krzysiekpagacz/argocd-playground.git
+    targetRevision: {{ .Values.targetRevision }}
+    path: charts/mariadb-operator
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: {{ .Values.namespace }}
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - ServerSideApply=true        # <-- enable SSA for large CRDs/manifests
+
+
+# apiVersion: argoproj.io/v1alpha1
+# kind: Application
+# metadata:
+#   name: mariadb-operator
+#   namespace: argocd              # where your Argo CD is installed
+#   labels:
+#     app.kubernetes.io/name: mariadb-operator
+# spec:
+#   project: default
+#   destination:
+#     server: https://kubernetes.default.svc
+#     namespace: mariadb           # workload namespace for operator pods
+#   source:
+#     repoURL: https://helm.mariadb.com/mariadb-operator
+#     chart: mariadb-operator
+#     targetRevision: 25.10.2      # chart version
+#     helm:
+#       releaseName: mariadb-operator
+#       valuesObject:
+#         # Optional: customize operator settings here.
+#         # Below are common examples; adjust to your needs.
+#         # Refer to chart values for the full list.
+#         image:
+#           pullPolicy: IfNotPresent
+#         metrics:
+#           enabled: true
+#         webhooks:
+#           enabled: true
+
+#   syncPolicy:
+#     automated:
+#       prune: true        # remove resources no longer defined
+#       selfHeal: true     # reconcile drift automatically
+#     syncOptions:
+#       - CreateNamespace=true   #

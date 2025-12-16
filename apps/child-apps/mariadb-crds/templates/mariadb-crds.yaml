@@ -1,17 +1,22 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: "{{ .Values.releaseName }}-application"
+  name: "{{ .Release.Name }}-crds"
   namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
 spec:
-  project: default
+  project: {{ .Values.projectName }}
   source:
     repoURL: https://github.com/krzysiekpagacz/argocd-playground.git
     targetRevision: {{ .Values.targetRevision }}
-    path: charts/mariadb-operator
+    path: charts/mariadb-crds
   destination:
     server: https://kubernetes.default.svc
     namespace: {{ .Values.namespace }}
   syncPolicy:
     automated:
       prune: true
+      selfHeal: true
+    syncOptions:
+      - ServerSideApply=true        # <-- enable SSA for large CRDs/manifests
