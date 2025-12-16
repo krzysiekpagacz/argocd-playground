@@ -1,0 +1,5 @@
+apiVersion: v2
+name: mariadb-operator-app
+type: application
+description: Helm Chart that deploys ArgoCD Application for MariaDB Operator
+version: 0.1.0

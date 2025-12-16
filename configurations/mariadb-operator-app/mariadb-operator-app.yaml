@@ -1,5 +1,0 @@
-project_name: database
-
-release_name: mariadb
-namespace: mariadb
-target_revision: frld-638--mariadb-bitnami-chart-replacement
