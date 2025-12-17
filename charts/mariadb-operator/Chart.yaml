@@ -3,7 +3,7 @@ apiVersion: v2
 name: mariadb-operator
 type: application
 description: Helm Chart that deploys official MariaDB Operator
-version: 0.1.1
+version: 0.1.0
 dependencies:
   - name: mariadb-operator
     version: 25.10.2

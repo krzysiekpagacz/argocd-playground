@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: "{{ .Release.Name }}-crds"
+  name: "mariadb-crds"
   namespace: argocd
   annotations:
     argocd.argoproj.io/sync-wave: "-1"
@@ -19,4 +19,4 @@ spec:
       prune: true
       selfHeal: true
     syncOptions:
-      - ServerSideApply=true        # <-- enable SSA for large CRDs/manifests
+      - ServerSideApply=true

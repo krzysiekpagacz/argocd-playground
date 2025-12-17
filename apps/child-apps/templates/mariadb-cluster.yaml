@@ -1,16 +1,14 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: "mariadb-parent-app"
+  name: "mariadb-cluser-app"
   namespace: argocd
 spec:
   project: {{ .Values.projectName }}
   source:
     repoURL: https://github.com/krzysiekpagacz/argocd-playground.git
     targetRevision: {{ .Values.targetRevision }}
-    path: apps/child-apps
-    helm:
-      valuesObject: {{ $.Values | toYaml | nindent 8}}
+    path: charts/mariadb-cluster
   destination:
     server: https://kubernetes.default.svc
     namespace: {{ .Values.namespace }}

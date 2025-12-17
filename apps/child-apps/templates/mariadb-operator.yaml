@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: "{{ .Release.Name }}-app"
+  name: "mariadb-operator-app"
   namespace: argocd
 spec:
   project: {{ .Values.projectName }}
@@ -17,7 +17,7 @@ spec:
       prune: true
       selfHeal: true
     syncOptions:
-      - ServerSideApply=true        # <-- enable SSA for large CRDs/manifests
+      - ServerSideApply=true
 
 
 # apiVersion: argoproj.io/v1alpha1
