@@ -9,6 +9,8 @@ spec:
     repoURL: https://github.com/krzysiekpagacz/argocd-playground.git
     targetRevision: {{ .Values.targetRevision }}
     path: charts/mariadb-operator
+    helm:
+      skipCrds: true
   destination:
     server: https://kubernetes.default.svc
     namespace: {{ .Values.namespace }}
@@ -16,9 +18,6 @@ spec:
     automated:
       prune: true
       selfHeal: true
-    syncOptions:
-      - ServerSideApply=true
-
 
 # apiVersion: argoproj.io/v1alpha1
 # kind: Application

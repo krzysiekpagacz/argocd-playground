@@ -1,5 +1,5 @@
 apiVersion: v2
-name: mariadb-operator-app
+name: mariadb-child-apps
 type: application
-description: Helm Chart that deploys ArgoCD Application for MariaDB Operator
+description: Helm Chart that deploys ArgoCD Applications for child apps deployment
 version: 0.1.0

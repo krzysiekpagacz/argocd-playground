@@ -1,5 +1,13 @@
 
 # Maria DB Operator PoC - FRLD-638
+
+# Prerequisits
+
+mariadb crds are installed in the cluster
+```bash
+helm repo add mariadb-operator https://helm.mariadb.com/mariadb-operator
+helm install mariadb-operator-crds mariadb-operator/mariadb-operator-crds
+```
         
     
 # Alternative options to bitnami/maria-db
@@ -50,7 +58,3 @@
  ## Migration Plan
     https://github.com/mariadb-operator/mariadb-operator/blob/main/docs/logical_backup.md#migrating-an-external-mariadb-to-a-mariadb-running-in-kubernetes
 
-
----
-
-# Argo Workflows PoC

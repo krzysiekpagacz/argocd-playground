@@ -1,9 +1,0 @@
-apiVersion: v2
-name: mariadb-crds
-type: application
-description: Helm Chart that deploys MariaDB CRDs
-version: 0.1.0
-dependencies:
-  - name: mariadb-operator-crds
-    version: 25.10.2
-    repository: "https://helm.mariadb.com/mariadb-operator"
