@@ -1,0 +1,20 @@
+{{/* The subchart that is used to fill in the calling chart with a data */}}
+{{/* The full set of values can be found [here](https://github.com/mariadb-operator/mariadb-operator/blob/main/deploy/charts/mariadb-cluster/values.yaml) */}}
+{{- define "mariadbCluster.computedValues" -}}
+{{- $cluster := default (dict) .Values.cluster -}}
+{{- $rootPass := default (dict) $cluster.rootPasswordSecretKeyRef -}}
+mariadb:
+  rootPasswordSecretKeyRef:
+    name: {{ default "mariadb" $rootPass.name | quote }}
+    key: {{ default "root-password" $rootPass.key | quote }}
+  storage:
+    size: 1Gi
+  replicas: {{ default 3 $cluster.replicas }}
+  galera:
+    enabled: {{ default false $cluster.replicas }}
+  podSecurityContext:
+    runAsUser: 1001
+    runAsGroup: 1001
+    fsGroup: 1001
+
+{{- end -}}

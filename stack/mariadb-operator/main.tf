@@ -3,21 +3,31 @@ locals {
 }
 
 resource "helm_release" "mariadb_operator" {
-  for_each          = local.mariadb_config
+  for_each = local.mariadb_config
 
-  chart             = "${path.module}/../../apps/parent-app"
-  description       = "Deploys MariaDB helm chart within the cluster as an ArgoCD Application"
+  chart       = "${path.module}/../../apps/parent-app"
+  description = "Deploys MariaDB helm chart within the cluster as an ArgoCD Application"
 
   name              = each.key
   namespace         = each.value.namespace
   dependency_update = true
   create_namespace  = true
 
+  depends_on = [kubernetes_secret_v1.mariadb_root]
+
   values = [
     yamlencode({
-      projectName = each.value.project_name
+      projectName    = each.value.project_name
       targetRevision = each.value.target_revision
-      namespace = each.value.namespace
+      namespace      = each.value.namespace
+      cluster = {
+        replicas      = try(each.value.cluster.replicas, 3)
+        galeraEnabled = try(each.value.cluster.galera.enabled, false)
+        rootPasswordSecretKeyRef = {
+          name = kubernetes_secret_v1.mariadb_root[each.key].metadata[0].name
+          key  = "root-password"
+        }
+      }
     })
   ]
 }

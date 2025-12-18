@@ -1,16 +1,16 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: "mariadb-parent-app"
+  name: "mariadb-cluser-app"
   namespace: argocd
 spec:
   project: {{ .Values.projectName }}
   source:
     repoURL: https://github.com/krzysiekpagacz/argocd-playground.git
     targetRevision: {{ .Values.targetRevision }}
-    path: apps/child-apps
+    path: charts/mariadb-cluster
     helm:
-      valuesObject: {{ $.Values | toYaml | nindent 8}}
+      valuesObject: {{- include "mariadbCluster.computedValues" . | nindent 8 }}
   destination:
     server: https://kubernetes.default.svc
     namespace: {{ .Values.namespace }}
@@ -18,11 +18,3 @@ spec:
     automated:
       prune: true
       selfHeal: true
-    retry:
-      limit: 30
-      backof:
-        duration: 1m
-        factor: 2
-        maxDuration: 5m
-    syncOptions:
-      - ServerSideApply=true

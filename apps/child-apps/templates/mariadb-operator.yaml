@@ -10,7 +10,7 @@ spec:
     targetRevision: {{ .Values.targetRevision }}
     path: charts/mariadb-operator
     helm:
-      skipCrds: true
+      valuesObject: {{- include "mariadbOperator.computedValues" . | nindent 8 }}
   destination:
     server: https://kubernetes.default.svc
     namespace: {{ .Values.namespace }}

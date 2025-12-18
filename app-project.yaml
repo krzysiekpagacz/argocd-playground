@@ -22,4 +22,4 @@ spec:
 
   # Optional: warn if resources become orphaned
   orphanedResources:
-    warn: true
+    warn: false

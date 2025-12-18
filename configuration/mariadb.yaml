@@ -2,3 +2,7 @@ database1:
   project_name: database
   namespace: mariadb-poc
   target_revision: frld-638--mariadb-bitnami-chart-replacement
+  cluster:
+    replicas: 1
+    galera:
+      enabled: false
