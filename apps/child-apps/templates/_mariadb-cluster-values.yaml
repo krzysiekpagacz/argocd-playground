@@ -19,31 +19,5 @@ mariadb:
 
   podSecurityContext:
     runAsNonRoot: true
-    runAsUser: 999
-    runAsGroup: 999
-    fsGroup: 999
-    fsGroupChangePolicy: OnRootMismatch
-
-  securityContext:
-    allowPrivilegeEscalation: false
-    readOnlyRootFilesystem: false
-    runAsNonRoot: true
-    runAsUser: 999
-    runAsGroup: 999
-    capabilities:
-      drop:
-        - ALL
-
-  # Optional: fix ownership/permissions issue for PVC
-  podTemplate:
-    spec:
-      initContainers:
-        - name: volume-permissions
-          image: busybox:1.36
-          command: ["sh", "-c", "chown -R 999:999 /var/lib/mysql && chmod -R g+rwX /var/lib/mysql"]
-          securityContext:
-            runAsUser: 0
-          volumeMounts:
-            - name: storage
-              mountPath: /var/lib/mysql
+    runAsUser: 0
 {{- end -}}
