@@ -19,8 +19,5 @@ mariadb:
     enabled: {{ $galeraEnabled }}
 
   podSecurityContext:
-    runAsNonRoot: true
-    runAsUser: 999
-    runAsGroup: 999
-    fsGroup: 999
+    runAsUser: 0
 {{- end -}}
