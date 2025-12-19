@@ -2,7 +2,17 @@ database1:
   project_name: database
   namespace: mariadb-poc-new
   target_revision: frld-638--mariadb-bitnami-chart-replacement
+  metrics:
+    enabled: true
   cluster:
     replicas: 1
     galera:
       enabled: false
+  myCnf: |
+    [mariadb]
+    bind-address=*
+    default_storage_engine=InnoDB
+    binlog_format=row
+    innodb_autoinc_lock_mode=2
+    innodb_buffer_pool_size=1600M
+    max_allowed_packet=256M

@@ -23,10 +23,8 @@ resource "helm_release" "mariadb_operator" {
       cluster = {
         replicas      = try(each.value.cluster.replicas, 3)
         galeraEnabled = try(each.value.cluster.galera.enabled, false)
-        rootPasswordSecretKeyRef = {
-          # name = kubernetes_secret_v1.mariadb_root[each.key].metadata[0].name
-          key  = "root-password"
-        }
+        metricsEnabled = try(each.value.metrics.enabled, false)
+        tlsEnabled = try(each.value.tls.enabled, false)
       }
     })
   ]

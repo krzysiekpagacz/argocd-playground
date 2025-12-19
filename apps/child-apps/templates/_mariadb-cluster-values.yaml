@@ -17,15 +17,38 @@ mariadb:
   galera:
     enabled: {{ $galeraEnabled }}
 
-  # ToDo(kp): for the MariaDB cluster bootstrapping it is required to have access to the Volume owned by root user, hence runAsUser=0
+  # for the MariaDB cluster bootstrapping it is required to have access to the Volume owned by root user, hence runAsUser=0
+  # once cluster is up and runnning switch back to the user 999.
+  # ToDo(kp): think about nicer solution to do that 
   # podSecurityContext:
   #   runAsUser: 0
-
   podSecurityContext:
     runAsNonRoot: true
     runAsUser: 999
     runAsGroup: 999
     fsGroup: 999
+
+  {{- if $cluster.myCnf }}
+  myCnf: {{ nindent 4 $cluster.myCnf }}
+  {{- else }}
+  # some defaults
+  myCnf: |
+    [mariadb]
+    bind-address=*
+    default_storage_engine=InnoDB
+    binlog_format=row
+    innodb_autoinc_lock_mode=2
+    innodb_buffer_pool_size=1600M
+    max_allowed_packet=256M
+  {{- end }}
+
+
+
+  metrics:
+    enabled: {{ default false $cluster.metricsEnabled }}
+
+  tls:
+    enabled: {{ default false $cluster.tlsEnabled }}
 
 
 {{- end -}}
