@@ -1,6 +1,6 @@
 database1:
   project_name: database
-  namespace: mariadb-poc-new
+  namespace: mariadb-poc
   target_revision: frld-638--mariadb-bitnami-chart-replacement
   metrics:
     enabled: false

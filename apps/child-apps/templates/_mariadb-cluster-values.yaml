@@ -20,13 +20,13 @@ mariadb:
   # for the MariaDB cluster bootstrapping it is required to have access to the Volume owned by root user, hence runAsUser=0
   # once cluster is up and runnning switch back to the user 999.
   # ToDo(kp): think about nicer solution to do that 
-  # podSecurityContext:
-  #   runAsUser: 0
   podSecurityContext:
-    runAsNonRoot: true
-    runAsUser: 999
-    runAsGroup: 999
-    fsGroup: 999
+    runAsUser: 0
+  # podSecurityContext:
+  #   runAsNonRoot: true
+  #   runAsUser: 999
+  #   runAsGroup: 999
+  #   fsGroup: 999
 
   metrics:
     enabled: {{ default false $cluster.metricsEnabled }}
