@@ -10,7 +10,9 @@ spec:
     targetRevision: {{ .Values.targetRevision }}
     path: charts/mariadb-cluster
     helm:
-      valuesObject: {{- include "mariadbCluster.computedValues" . | nindent 8 }}
+      valuesObject:
+        mariadb-cluster: 
+        {{- include "mariadbCluster.computedValues" . | nindent 10 }}
   destination:
     server: https://kubernetes.default.svc
     namespace: {{ .Values.namespace }}

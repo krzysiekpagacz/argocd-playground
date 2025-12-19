@@ -7,3 +7,4 @@ dependencies:
   - name: mariadb-cluster
     version: 25.10.2
     repository: "https://helm.mariadb.com/mariadb-operator"
+

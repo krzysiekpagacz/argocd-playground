@@ -4,6 +4,7 @@ resource "random_password" "mariadb_password" {
   override_special = "!@#$%^&*"
 }
 
+# it creates admin password
 resource "kubernetes_secret_v1" "mariadb_root" {
   for_each = local.mariadb_config
 

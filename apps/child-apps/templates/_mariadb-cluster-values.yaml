@@ -13,13 +13,14 @@ mariadb:
 
   storage:
     size: 1Gi
+    storageClassName: {{ $cluster.storageClassName | default "standard" }}
   replicas: {{ default 3 $cluster.replicas }}
   galera:
     enabled: {{ $galeraEnabled }}
 
   podSecurityContext:
-    privileged: true
-    runAsUser: 0
-    runAsGroup: 0
+    runAsNonRoot: true
+    runAsUser: 999
+    runAsGroup: 999
     fsGroup: 999
 {{- end -}}
