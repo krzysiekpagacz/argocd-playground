@@ -3,6 +3,9 @@ kind: Application
 metadata:
   name: "mariadb-operator-app"
   namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
+
 spec:
   project: {{ .Values.projectName }}
   source:
