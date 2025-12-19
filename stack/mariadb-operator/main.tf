@@ -13,7 +13,7 @@ resource "helm_release" "mariadb_operator" {
   dependency_update = true
   create_namespace  = true
 
-  depends_on = [kubernetes_secret_v1.mariadb_root]
+  # depends_on = [kubernetes_secret_v1.mariadb_root]
 
   values = [
     yamlencode({
@@ -24,7 +24,7 @@ resource "helm_release" "mariadb_operator" {
         replicas      = try(each.value.cluster.replicas, 3)
         galeraEnabled = try(each.value.cluster.galera.enabled, false)
         rootPasswordSecretKeyRef = {
-          name = kubernetes_secret_v1.mariadb_root[each.key].metadata[0].name
+          # name = kubernetes_secret_v1.mariadb_root[each.key].metadata[0].name
           key  = "root-password"
         }
       }

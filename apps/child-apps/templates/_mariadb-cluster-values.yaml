@@ -1,4 +1,3 @@
-
 {{/* The subchart used to feed the calling chart with values for the mariadb-cluster chart */}}
 {{/* Full values reference: https://github.com/mariadb-operator/mariadb-operator/blob/main/deploy/charts/mariadb-cluster/README.md */}}
 {{- define "mariadbCluster.computedValues" -}}
@@ -10,16 +9,15 @@ mariadb:
   rootPasswordSecretKeyRef:
     name: {{ default "mariadb" $rootPass.name | quote }}
     key:  {{ default "root-password" $rootPass.key | quote }}
+    generate: true
 
   storage:
     size: 1Gi
-    storageClassName: {{ $cluster.storageClassName | default "standard" }}
   replicas: {{ default 3 $cluster.replicas }}
   galera:
     enabled: {{ $galeraEnabled }}
 
-  
   podSecurityContext:
-    runAsUser: o
+    runAsUser: 0
 
 {{- end -}}
