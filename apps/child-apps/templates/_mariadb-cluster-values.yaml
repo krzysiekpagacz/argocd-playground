@@ -1,5 +1,5 @@
 {{/* The subchart used to feed the calling chart with values for the mariadb-cluster chart */}}
-{{/* Full values reference: https://github.com/mariadb-operator/mariadb-operator/blob/main/deploy/charts/mariadb-cluster/README.md */}}
+{{/* Full values reference https://github.com/mariadb-operator/mariadb-operator/blob/main/deploy/charts/mariadb-cluster/README.md */}}
 {{- define "mariadbCluster.computedValues" -}}
 {{- $cluster := default (dict) .Values.cluster -}}
 {{- $rootPass := default (dict) $cluster.rootPasswordSecretKeyRef -}}
@@ -48,7 +48,7 @@ mariadb:
     enabled: {{ default false $cluster.metricsEnabled }}
 
   tls:
-    enabled: {{ default false $cluster.tlsEnabled }}
+    enabled: {{ default false $cluster.tlsEnabled }} #ToDo(kp): make default to true before merge
 
 
 {{- end -}}

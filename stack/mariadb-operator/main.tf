@@ -17,14 +17,16 @@ resource "helm_release" "mariadb_operator" {
 
   values = [
     yamlencode({
+      databaseName   = each.key
       projectName    = each.value.project_name
       targetRevision = each.value.target_revision
       namespace      = each.value.namespace
       cluster = {
-        replicas      = try(each.value.cluster.replicas, 3)
-        galeraEnabled = try(each.value.cluster.galera.enabled, false)
+        replicas       = try(each.value.cluster.replicas, 3)
+        galeraEnabled  = try(each.value.cluster.galera.enabled, false)
         metricsEnabled = try(each.value.metrics.enabled, false)
-        tlsEnabled = try(each.value.tls.enabled, false)
+        tlsEnabled     = try(each.value.tls.enabled, false) #ToDo(kp): make default to true before merge
+        myCnf          = try(each.value.cluster.myCnf, null)
       }
     })
   ]
