@@ -28,22 +28,6 @@ mariadb:
     runAsGroup: 999
     fsGroup: 999
 
-  {{- if $cluster.myCnf }}
-  myCnf: {{ nindent 4 $cluster.myCnf }}
-  {{- else }}
-  # some defaults
-  myCnf: |
-    [mariadb]
-    bind-address=*
-    default_storage_engine=InnoDB
-    binlog_format=row
-    innodb_autoinc_lock_mode=2
-    innodb_buffer_pool_size=1600M
-    max_allowed_packet=256M
-  {{- end }}
-
-
-
   metrics:
     enabled: {{ default false $cluster.metricsEnabled }}
 

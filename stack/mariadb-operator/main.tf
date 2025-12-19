@@ -26,7 +26,6 @@ resource "helm_release" "mariadb_operator" {
         galeraEnabled  = try(each.value.cluster.galera.enabled, false)
         metricsEnabled = try(each.value.metrics.enabled, false)
         tlsEnabled     = try(each.value.tls.enabled, false) #ToDo(kp): make default to true before merge
-        myCnf          = try(each.value.cluster.myCnf, null)
       }
     })
   ]
