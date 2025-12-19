@@ -17,7 +17,15 @@ mariadb:
   galera:
     enabled: {{ $galeraEnabled }}
 
+  # ToDo(kp): for the MariaDB cluster bootstrapping it is required to have access to the Volume owned by root user, hence runAsUser=0
+  # podSecurityContext:
+  #   runAsUser: 0
+
   podSecurityContext:
-    runAsUser: 0
+    runAsNonRoot: true
+    runAsUser: 999
+    runAsGroup: 999
+    fsGroup: 999
+
 
 {{- end -}}
