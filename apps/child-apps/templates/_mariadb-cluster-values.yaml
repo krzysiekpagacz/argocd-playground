@@ -11,13 +11,11 @@ mariadb:
     name: {{ default "mariadb" $rootPass.name | quote }}
     key:  {{ default "root-password" $rootPass.key | quote }}
     generate: true
-
   storage:
     size: 1Gi
   replicas: {{ default 3 $cluster.replicas }}
   galera:
     enabled: {{ $galeraEnabled }}
-
   # for the MariaDB cluster bootstrapping it is required to have access to the Volume owned by root user, hence runAsUser=0
   # once cluster is up and runnning switch back to the user 999.
   # ToDo(kp): think about nicer solution to do that 
@@ -28,10 +26,8 @@ mariadb:
   #   runAsUser: 999
   #   runAsGroup: 999
   #   fsGroup: 999
-
   metrics:
     enabled: {{ default false $cluster.metricsEnabled }}
-
   tls:
     enabled: {{ default false $cluster.tlsEnabled }} #ToDo(kp): make default to true before merge
 
@@ -54,6 +50,5 @@ grants:
     username: admin
     host: "%"
     grantOption: true
-
 
 {{- end -}}
