@@ -43,7 +43,6 @@ users:
     passwordSecretKeyRef:
       name: admin-password
       key: password
-      generate: true
     host: "%"
 
 grants:

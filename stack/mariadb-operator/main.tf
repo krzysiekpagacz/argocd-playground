@@ -13,7 +13,7 @@ resource "helm_release" "mariadb_operator" {
   dependency_update = true
   create_namespace  = true
 
-  # depends_on = [kubernetes_secret_v1.admin_password]
+  depends_on = [kubernetes_secret_v1.admin_password]
 
   values = [
     yamlencode({
