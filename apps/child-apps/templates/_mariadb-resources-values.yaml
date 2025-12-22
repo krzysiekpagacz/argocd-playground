@@ -1,6 +1,6 @@
-{{/* The subchart used to feed the calling chart with values for the mariadb-cluster chart */}}
+{{/* The subchart used to feed the calling chart with values for the mariadb resources (like Database instance, Users, Grants etc.) */}}
 {{/* For specific resource refer to https://github.com/mariadb-operator/mariadb-operator/tree/main/docs */}}
 {{- define "mariadbResources.computedValues" -}}
-databaseName: {{ default "mariadb" .Values.databaseName}}
+databaseName: {{ default "mariadb" .Values.databaseName | toString }}
 
 {{- end -}}

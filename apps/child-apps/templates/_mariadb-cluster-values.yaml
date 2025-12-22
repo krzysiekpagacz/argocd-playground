@@ -1,11 +1,12 @@
 {{/* The subchart used to feed the calling chart with values for the mariadb-cluster chart */}}
-{{/* Full values reference https://github.com/mariadb-operator/mariadb-operator/blob/main/deploy/charts/mariadb-cluster/README.md */}}
+{{/* Full values reference https://github.com/mariadb-operator/mariadb-operator/blob/main/deploy/charts/mariadb-cluster/values.yaml */}}
 {{- define "mariadbCluster.computedValues" -}}
 {{- $cluster := default (dict) .Values.cluster -}}
 {{- $rootPass := default (dict) $cluster.rootPasswordSecretKeyRef -}}
 {{- $galeraEnabled := default false (or $cluster.galeraEnabled (and (hasKey $cluster "galera") (get $cluster.galera "enabled"))) -}}
 
 mariadb:
+  name: {{ .Values.databaseName }}
   rootPasswordSecretKeyRef:
     name: {{ default "mariadb" $rootPass.name | quote }}
     key:  {{ default "root-password" $rootPass.key | quote }}
