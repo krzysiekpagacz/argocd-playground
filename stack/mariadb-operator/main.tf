@@ -13,7 +13,7 @@ resource "helm_release" "mariadb_operator" {
   dependency_update = true
   create_namespace  = true
 
-  # depends_on = [kubernetes_secret_v1.mariadb_root]
+  # depends_on = [kubernetes_secret_v1.admin_password]
 
   values = [
     yamlencode({
@@ -22,6 +22,7 @@ resource "helm_release" "mariadb_operator" {
       targetRevision = each.value.target_revision
       namespace      = each.value.namespace
       cluster = {
+        clusterName = each.key
         replicas       = try(each.value.cluster.replicas, 3)
         galeraEnabled  = try(each.value.cluster.galera.enabled, false)
         metricsEnabled = try(each.value.metrics.enabled, false)

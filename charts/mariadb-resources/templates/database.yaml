@@ -3,10 +3,9 @@ kind: Database
 metadata:
   name: database
 spec:
-  # If you want the database to be created with a different name than the resource name
-  # name: my-logical-database
+  name: {{ .Values.databaseName }}
   mariaDbRef:
-    name: {{ default "mariadb" .Values.databaseName }}
+    name: {{ .Values.clusterName }}
   characterSet: utf8
   collate: utf8_general_ci
   # Delete the resource in the database whenever the CR gets deleted.

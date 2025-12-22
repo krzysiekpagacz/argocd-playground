@@ -5,8 +5,8 @@
 {{- $rootPass := default (dict) $cluster.rootPasswordSecretKeyRef -}}
 {{- $galeraEnabled := default false (or $cluster.galeraEnabled (and (hasKey $cluster "galera") (get $cluster.galera "enabled"))) -}}
 
+nameOverride: {{ .Values.clusterName }}
 mariadb:
-  name: {{ .Values.databaseName }}
   rootPasswordSecretKeyRef:
     name: {{ default "mariadb" $rootPass.name | quote }}
     key:  {{ default "root-password" $rootPass.key | quote }}
@@ -34,6 +34,27 @@ mariadb:
 
   tls:
     enabled: {{ default false $cluster.tlsEnabled }} #ToDo(kp): make default to true before merge
+
+databases:
+- name: {{ .Values.databaseName }}
+
+users:
+  - name: admin
+    passwordSecretKeyRef:
+      name: admin-password
+      key: password
+      generate: true
+    host: "%"
+
+grants:
+  - name: admin-all
+    privileges:
+      - "ALL PRIVILEGES"
+    database: "*"
+    table: "*"
+    username: admin
+    host: "%"
+    grantOption: true
 
 
 {{- end -}}
