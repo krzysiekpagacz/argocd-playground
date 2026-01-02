@@ -3,4 +3,7 @@
 {{- define "mariadbOperator.computedValues" -}}
 metrics:
   enabled: true
+ha:
+  enabled: true
+  replicas: 2
 {{- end -}}
