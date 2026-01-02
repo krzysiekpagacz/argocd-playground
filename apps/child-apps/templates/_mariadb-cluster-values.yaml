@@ -7,6 +7,8 @@
 
 nameOverride: {{ .Values.clusterName }}
 mariadb:
+  metrics:
+    enabled: true
   rootPasswordSecretKeyRef:
     name: {{ default "mariadb" $rootPass.name | quote }}
     key:  {{ default "root-password" $rootPass.key | quote }}
