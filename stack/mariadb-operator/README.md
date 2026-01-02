@@ -67,7 +67,7 @@ kubectl exec <pod-name> -it -- bash
 mysql -h <database cluter name> -u admin -p
 ```
 
-Enter the admin password, which zou can get as followsÖ
+Enter the admin password, which you can get as follows:
 ```bash
 kubectl get secret admin-password -n <target-namespace> -o jsonpath="{.data.password}" | base64 --decode
 ```
