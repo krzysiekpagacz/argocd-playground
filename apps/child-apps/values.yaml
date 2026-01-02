@@ -1,0 +1,6 @@
+# the values here are only to make some linters in IDE happy. The actual values are passed in from the configuration file or are defined in helpers
+databaseName: ""
+projectName: ""
+targetRevision: ""
+namespace: ""
+cluster: {}

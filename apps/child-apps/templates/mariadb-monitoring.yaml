@@ -1,0 +1,30 @@
+{{- $cluster := default (dict) .Values.cluster -}}
+{{- if $cluster.monitoringEnabled -}}
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.databaseName }}-monitoring"
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
+spec:
+  project: {{ .Values.projectName }}
+  source:
+    repoURL: https://github.com/krzysiekpagacz/argocd-playground.git
+    targetRevision: {{ .Values.targetRevision }}
+    path: charts/mariadb-monitoring
+    helm:
+      valuesObject:
+        mariadb-cluster: 
+        {{- include "mariadbMonitoring.computedValues" . | nindent 10 }}
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: {{ .Values.namespace }}
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - ServerSideApply=true # SSA must be set as the annotations that contains last applied configuration with the json dashboard is huge and will be rejected by API
+
+{{- end -}}

@@ -1,0 +1,12 @@
+
+# values.yaml
+namespaceScope: false
+
+# no explicit list
+watchNamespaces: ""
+
+# **stringified** label selector
+watchNamespaceSelector: "grafana.integreatly.org/managed=true"
+
+# optional: restrict watched CRs by label
+# watchLabelSelectors: ""

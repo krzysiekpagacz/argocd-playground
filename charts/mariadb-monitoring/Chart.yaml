@@ -1,0 +1,6 @@
+# to use it Grafana Operator must be installed: https://grafana.github.io/grafana-operator/docs/quick-start/
+apiVersion: v2
+name: mariadb-monitoring
+type: application
+description: Helm Chart that deploys resources for monitoring MariaDB Cluster
+version: 0.1.0
