@@ -1,8 +1,5 @@
-{{- range $dashboard, $_ := .Files.Glob "dashboards/*.json" }}
-{{- $name := printf "%s" (trimSuffix ".json" (base $dashboard)) }}
-{{- /*Truncate to 63 characters (Kubernetes DNS-1123 max) and
-ensure it does not start/end with '-' after truncation.*/ -}}
-{{- $name := $name | trunc 63 | trimPrefix "-" | trimSuffix "-" -}}
+{{- range $dashboard, $_ := .Files.Glob "dashboards/**.json" }}
+{{- $name := printf "%s" (trimSuffix ".json" (base $dashboard)) | trunc 63 | trimPrefix "-" | trimSuffix "-" -}}
 
 ---
 apiVersion: grafana.integreatly.org/v1beta1

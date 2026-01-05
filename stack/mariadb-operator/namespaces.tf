@@ -7,5 +7,9 @@ resource "kubernetes_namespace_v1" "ns" {
 
   metadata {
     name = each.key
+    labels = {
+      "grafana.integreatly.org/managed" = "true"
+    }
   }
+
 }
