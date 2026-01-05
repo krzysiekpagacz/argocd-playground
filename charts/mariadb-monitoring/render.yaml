@@ -1,0 +1,36 @@
+---
+# Source: mariadb-monitoring/templates/dashboards.yaml
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: "dummy"
+  labels:
+    app.kubernetes.io/name: "dummy"
+spec:
+  instanceSelector:
+    matchLabels:
+      dashboards: "grafana"
+  allowCrossNamespaceImport: true
+  resyncPeriod: 30s
+  contentCacheDuration: 30s
+  folder: Operations
+  json: |-
+    {"annotations":{"list":[]},"editable":true,"graphTooltip":1,"hideControls":false,"links":[],"panels":[],"refresh":"5s","schemaVersion":17,"style":"dark","tags":[],"templating":{"list":[]},"time":{"from":"now-6h","to":"now"},"timepicker":{"refresh_intervals":[],"time_options":[]},"timezone":"browser","title":"Dummy Dashboard","uid":"dummy","version":0}
+---
+# Source: mariadb-monitoring/templates/dashboards.yaml
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: "dummy2"
+  labels:
+    app.kubernetes.io/name: "dummy2"
+spec:
+  instanceSelector:
+    matchLabels:
+      dashboards: "grafana"
+  allowCrossNamespaceImport: true
+  resyncPeriod: 30s
+  contentCacheDuration: 30s
+  folder: Operations
+  json: |-
+    {"annotations":{"list":[]},"editable":true,"graphTooltip":1,"hideControls":false,"links":[],"panels":[],"refresh":"5s","schemaVersion":17,"style":"dark","tags":[],"templating":{"list":[]},"time":{"from":"now-6h","to":"now"},"timepicker":{"refresh_intervals":[],"time_options":[]},"timezone":"browser","title":"Dummy Dashboard 2","uid":"dummy2","version":0}

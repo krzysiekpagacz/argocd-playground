@@ -1,11 +1,14 @@
-{{- range $dashboard, $_ := .Files.Glob "dashboards/**.json" }}
-{{- $name := printf "%s" (trimSuffix ".json" (base $dashboard)) | trunc 63 | trimPrefix "-" | trimSuffix "-" -}}
+{{- range $dashboard, $_ := .Files.Glob "dashboards/*.json" }}
+{{- $base := base $dashboard -}}
+{{- $name := printf "%s" (trimSuffix ".json" $base) | trunc 63 | trimPrefix "-" | trimSuffix "-" -}}
 
 ---
 apiVersion: grafana.integreatly.org/v1beta1
 kind: GrafanaDashboard
 metadata:
   name: {{ $name | quote }}
+  labels:
+    app.kubernetes.io/name: {{ $name | quote }}
 spec:
   instanceSelector:
     matchLabels:
@@ -15,12 +18,10 @@ spec:
   contentCacheDuration: 30s
   folder: Operations
   json: |-
-    {{- /* Load JSON into a map so we can mutate it */ -}}
+    {{- /* Load and sanitize JSON; enforce unique uid, drop id */ -}}
     {{- $obj := ($.Files.Get $dashboard | fromJson) -}}
-    {{- /* Ensure a unique UID per file (use the CR/resource name) */ -}}
     {{- $_ := set $obj "uid" $name -}}
-    {{- /* Remove any numeric or non-null id that may cause issues */ -}}
     {{- $_ := unset $obj "id" -}}
-    {{- /* Emit the sanitized JSON */ -}}
     {{- toJson $obj | nindent 4 }}
+{{- printf "\n" -}}
 {{- end }}
