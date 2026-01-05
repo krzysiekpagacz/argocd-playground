@@ -17,7 +17,13 @@ spec:
   resyncPeriod: 30s
   contentCacheDuration: 30s
   folder: Operations
-  # fromJson and toJson => to minify json
   json: |-
-    {{- ($.Files.Get $dashboard | fromJson | toJson) | nindent 4 }}
+    {{- /* Load JSON into a map so we can mutate it */ -}}
+    {{- $obj := ($.Files.Get $dashboard | fromJson) -}}
+    {{- /* Ensure a unique UID per file (use the CR/resource name) */ -}}
+    {{- $_ := set $obj "uid" $name -}}
+    {{- /* Remove any numeric or non-null id that may cause issues */ -}}
+    {{- $_ := unset $obj "id" -}}
+    {{- /* Emit the sanitized JSON */ -}}
+    {{- toJson $obj | nindent 4 }}
 {{- end }}

@@ -61,7 +61,7 @@
     "editable": true,
     "fiscalYearStartMonth": 0,
     "graphTooltip": 1,
-    "id": 0,
+    "id": null,
     "links": [],
     "panels": [
         {
@@ -3518,6 +3518,5 @@
     "timepicker": {},
     "timezone": "",
     "title": "Kubernetes Cluster Overview",
-    "uid": "k8s_views_global",
     "version": 2
 }
