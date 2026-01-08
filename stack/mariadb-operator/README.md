@@ -44,7 +44,7 @@ Once the CRDs are in place, you only need to adapt the configuration YAML file a
 
 ```mermaid
 flowchart TD
-    config["Configuration"] -->|feeds| stack["Stack <br>(Terraform)"]
+    config["Configuration with values specific to Parent App"] -->|feeds| stack["Stack <br>(Terraform)"]
 
 
     stack -->|deploys| Argo
